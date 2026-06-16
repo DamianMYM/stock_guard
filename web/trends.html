@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>历史趋势 | 鼓手 Stock Guard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell detail-shell">
+      <section class="hero compact-hero">
+        <div class="hero-copy">
+          <div class="brandline"><span class="mark"></span><span>鼓手 Stock Guard Trends</span></div>
+          <h1 id="trendTitle">历史趋势</h1>
+          <p>查看近四个报告期的营收增速、净利增速与 ROE 变化。</p>
+        </div>
+      </section>
+
+      <section class="panel detail-panel">
+        <div class="actions detail-actions">
+          <a class="link-button" href="/">返回总览</a>
+        </div>
+        <form class="snapshot-form" id="snapshotForm">
+          <label>估值分位
+            <input id="snapshotValue" type="number" min="0" max="1" step="0.0001" placeholder="例如 0.72" />
+          </label>
+          <label>日期
+            <input id="snapshotDate" type="date" />
+          </label>
+          <button type="submit">保存估值快照</button>
+        </form>
+        <div id="trendContent" class="empty-state compact-empty">
+          <h2>加载中</h2>
+          <p>正在生成趋势图。</p>
+        </div>
+      </section>
+    </main>
+    <script src="trends.js"></script>
+  </body>
+</html>

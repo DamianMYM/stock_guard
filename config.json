@@ -1,0 +1,183 @@
+{
+  "portfolio_cash": 100000,
+  "planned_investment": 90000,
+  "required_margin_of_safety": 0.3,
+  "max_single_stock_weight": 0.35,
+  "default_target_pe": 20,
+  "default_growth_rate": 0.08,
+  "default_aaa_yield": 0.04,
+  "stocks": [
+    {
+      "symbol": "600879.SH",
+      "name": "航天电子",
+      "today_close": 26.78,
+      "planned_amount": 50000,
+      "pe_ttm": 368,
+      "eps_ttm": 0.07,
+      "bvps": 6.3224,
+      "target_pe": 20,
+      "growth_rate": 0.08,
+      "research_updated_at": "2026-04-12",
+      "revenue_growth": -0.0259,
+      "profit_growth": -0.5858,
+      "roe": null,
+      "operating_cash_flow_growth": null,
+      "valuation_percentile": null,
+      "valuation_percentile_history": [
+        {
+          "date": "2026-01-15",
+          "value": 0.9945
+        },
+        {
+          "date": "2026-01-16",
+          "value": 0.9917
+        },
+        {
+          "date": "2026-01-19",
+          "value": 0.9931
+        },
+        {
+          "date": "2026-01-21",
+          "value": 0.9945
+        }
+      ],
+      "valuation_percentile_source": "理杏仁公开页搜索快照",
+      "notes": "今天卖出价为 26.78，重新买入需要更严格的安全边际。"
+    },
+    {
+      "symbol": "002046.SZ",
+      "name": "国机精工",
+      "today_close": 58.51,
+      "planned_amount": 20000,
+      "pe_ttm": 90,
+      "bvps": 8.66,
+      "target_pe": 22,
+      "growth_rate": 0.1,
+      "research_updated_at": "待补充",
+      "revenue_growth": null,
+      "profit_growth": null,
+      "roe": null,
+      "operating_cash_flow_growth": null,
+      "valuation_percentile": null,
+      "valuation_percentile_history": [
+        {
+          "date": "2026-03-03",
+          "value": 0.9931
+        },
+        {
+          "date": "2026-03-06",
+          "value": 0.9959
+        },
+        {
+          "date": "2026-03-12",
+          "value": 0.9876
+        },
+        {
+          "date": "2026-03-13",
+          "value": 0.971
+        }
+      ],
+      "valuation_percentile_source": "理杏仁公开页搜索快照",
+      "notes": "估值偏高时只适合观察或小仓位试探。"
+    },
+    {
+      "symbol": "002049.SZ",
+      "name": "紫光国微",
+      "today_close": 81.94,
+      "planned_amount": 20000,
+      "pe_ttm": 39,
+      "bvps": 12.7,
+      "target_pe": 25,
+      "growth_rate": 0.08,
+      "research_updated_at": "2026-04-22",
+      "revenue_growth": 0.1152,
+      "profit_growth": 0.2186,
+      "roe": null,
+      "operating_cash_flow_growth": -0.478,
+      "valuation_percentile": null,
+      "valuation_percentile_history": [
+        {
+          "date": "2026-01-21",
+          "value": 0.828
+        },
+        {
+          "date": "2026-01-23",
+          "value": 0.8326
+        },
+        {
+          "date": "2026-01-29",
+          "value": 0.8169
+        },
+        {
+          "date": "2026-03-13",
+          "value": 0.7175
+        }
+      ],
+      "valuation_percentile_source": "理杏仁公开页搜索快照",
+      "notes": "三只里相对估值压力较低，但仍需等待安全边际。"
+    },
+    {
+      "symbol": "600259.SH",
+      "name": "中稀有色",
+      "today_close": 108.96,
+      "planned_amount": 10000,
+      "pe_ttm": 145,
+      "eps_ttm": 0.75,
+      "bvps": 10.885,
+      "target_pe": 25,
+      "growth_rate": 0.1,
+      "research_updated_at": "2026-04-29",
+      "revenue_growth": 0.019,
+      "profit_growth": 2.6155,
+      "roe": 0.0467,
+      "operating_cash_flow_growth": null,
+      "operating_cash_flow_value": -4.27,
+      "valuation_percentile": null,
+      "valuation_percentile_history": [
+        {
+          "date": "2026-02-06",
+          "value": 0.5048
+        },
+        {
+          "date": "2026-02-10",
+          "value": 0.535
+        },
+        {
+          "date": "2026-02-12",
+          "value": 0.565
+        },
+        {
+          "date": "2026-03-12",
+          "value": 0.5683
+        }
+      ],
+      "valuation_percentile_source": "理杏仁公开页搜索快照",
+      "notes": "稀土题材弹性较大，Graham口径下价格明显高于保守价值。"
+    },
+    {
+      "symbol": "601606.SH",
+      "name": "长城军工",
+      "today_close": 38.65,
+      "planned_amount": 10000,
+      "pe_ttm": 3950,
+      "eps_ttm": 0.01,
+      "bvps": 3.01,
+      "target_pe": 25,
+      "growth_rate": 0.08,
+      "research_updated_at": "待补充",
+      "revenue_growth": null,
+      "profit_growth": null,
+      "roe": null,
+      "operating_cash_flow_growth": null,
+      "valuation_percentile": null,
+      "valuation_percentile_history": [
+        {
+          "date": "2025-07-30",
+          "value": 0.6923
+        }
+      ],
+      "valuation_percentile_source": "知了财报公开页搜索快照",
+      "notes": "盈利很薄，估值主要来自军工题材预期，不适合Graham重仓。"
+    }
+  ]
+}
