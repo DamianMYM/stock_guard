@@ -3,10 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="assets/stock-guard.ico" />
     <title>鼓手 Stock Guard</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="mode-simple">
     <main class="shell">
       <section class="hero">
         <div class="hero-copy">
@@ -14,15 +15,19 @@
             <span class="mark"></span>
             <span>鼓手 Stock Guard</span>
           </div>
+          <div class="mode-switch" role="tablist" aria-label="界面模式">
+            <button type="button" class="mode-chip active" data-mode="simple">普通模式</button>
+            <button type="button" class="mode-chip" data-mode="pro">专业模式</button>
+          </div>
           <h1>鼓手</h1>
-          <p>敲出长线投资的节奏：精选好公司，等待好价格，再提醒进场时机。</p>
+          <p>先给结论，再看推理。普通客户先看值不值得研究，专业用户再展开估值、财务、公告与思考过程。</p>
         </div>
         <button type="button" class="mascot-stage" id="mascotAsk" aria-label="点击小老虎，向本地模型提问">
-          <img src="assets/stock-guard-tiger.png" alt="敲鼓的可爱小老虎" />
+          <img src="assets/stock-guard-tiger.png" alt="鼓手小老虎" />
           <span>点我提问</span>
         </button>
         <div class="server-banner" id="serverBanner" hidden>
-          当前是文件模式，请先启动本地服务，再打开 http://127.0.0.1:8787。
+          当前是文件模式，请先启动本地服务，再打开 http://127.0.0.1:8787
         </div>
       </section>
 
@@ -30,7 +35,7 @@
         <button type="button" class="chip" data-symbol="600879.SH">航天电子</button>
         <button type="button" class="chip" data-symbol="002046.SZ">国机精工</button>
         <button type="button" class="chip" data-symbol="002049.SZ">紫光国微</button>
-        <button type="button" class="chip active" data-symbol="600259.SH">中稀有色</button>
+        <button type="button" class="chip active" data-symbol="600259.SH">中钨高新</button>
         <button type="button" class="chip" data-symbol="601606.SH">长城军工</button>
       </section>
 
@@ -39,55 +44,61 @@
           <div class="panel-title">
             <div>
               <h2>查询参数</h2>
-              <p>实时行情自动拉取；财务参数当前来自本地预设或手动输入，需注意更新日期。</p>
+              <p>普通模式优先给结果，高级参数和研究口径收进折叠区，避免第一次使用就被一堆术语挡住。</p>
             </div>
             <span class="pill" id="status">等待连接</span>
           </div>
 
-          <div class="toolbar wide">
-            <button type="button" class="secondary" id="newStockButton">新添加股票</button>
+          <div class="toolbar wide simple-only">
+            <button type="button" class="secondary" id="newStockButton">新增股票</button>
           </div>
 
           <div class="field wide">
             <label for="symbol">股票代码或简称</label>
             <div class="lookup">
-              <input id="symbol" name="symbol" value="600259.SH" placeholder="例如 600259.SH / 中稀有色" autocomplete="off" />
+              <input id="symbol" name="symbol" value="600259.SH" placeholder="例如 600259.SH / 中钨高新" autocomplete="off" />
               <button type="button" class="ghost" id="loadPreset">带入数据</button>
             </div>
           </div>
 
-          <div class="field">
+          <div class="field simple-key">
             <label for="price">当前价</label>
             <input id="price" name="today_close" type="number" step="0.01" placeholder="自动获取" />
           </div>
-          <div class="field">
-            <label for="pe_ttm">PE(TTM)</label>
-            <input id="pe_ttm" name="pe_ttm" type="number" step="0.01" placeholder="预设或手填" />
-          </div>
-          <div class="field">
-            <label for="eps_ttm">EPS(TTM)</label>
-            <input id="eps_ttm" name="eps_ttm" type="number" step="0.001" placeholder="每股收益" />
-          </div>
-          <div class="field">
-            <label for="bvps">BVPS</label>
-            <input id="bvps" name="bvps" type="number" step="0.0001" placeholder="每股净资产" />
-          </div>
-          <div class="field">
-            <label for="target_pe">目标 PE</label>
-            <input id="target_pe" name="target_pe" type="number" step="0.1" value="20" />
-          </div>
-          <div class="field">
-            <label for="growth_rate">增长假设</label>
-            <input id="growth_rate" name="growth_rate" type="number" step="0.01" value="0.08" />
-          </div>
-          <div class="field">
+          <div class="field simple-key">
             <label for="planned_amount">计划投入</label>
             <input id="planned_amount" name="planned_amount" type="number" step="1000" value="10000" />
           </div>
-          <div class="field">
-            <label for="required_margin">安全边际门槛 (%)</label>
-            <input id="required_margin" name="required_margin_of_safety" type="number" step="1" min="0" max="95" value="30" />
-          </div>
+
+          <details class="advanced-panel wide" id="advancedPanel">
+            <summary>高级参数与研究口径</summary>
+            <div class="advanced-grid">
+              <div class="field">
+                <label for="pe_ttm">PE(TTM)</label>
+                <input id="pe_ttm" name="pe_ttm" type="number" step="0.01" placeholder="预设或手填" />
+              </div>
+              <div class="field">
+                <label for="eps_ttm">EPS(TTM)</label>
+                <input id="eps_ttm" name="eps_ttm" type="number" step="0.001" placeholder="每股收益" />
+              </div>
+              <div class="field">
+                <label for="bvps">BVPS</label>
+                <input id="bvps" name="bvps" type="number" step="0.0001" placeholder="每股净资产" />
+              </div>
+              <div class="field">
+                <label for="target_pe">目标 PE</label>
+                <input id="target_pe" name="target_pe" type="number" step="0.1" value="20" />
+              </div>
+              <div class="field">
+                <label for="growth_rate">增长假设</label>
+                <input id="growth_rate" name="growth_rate" type="number" step="0.01" value="0.08" />
+              </div>
+              <div class="field">
+                <label for="required_margin">安全边际门槛 (%)</label>
+                <input id="required_margin" name="required_margin_of_safety" type="number" step="1" min="0" max="95" value="30" />
+              </div>
+            </div>
+          </details>
 
           <label class="switch wide">
             <input id="live" name="live" type="checkbox" checked />
@@ -97,17 +108,31 @@
 
           <div class="actions">
             <button type="submit">计算建议</button>
+            <button type="button" class="secondary" id="saveWatchlistButton">加入观察池</button>
             <button type="button" class="secondary" id="quoteButton">只拉行情</button>
             <button type="button" class="secondary" id="researchButton">刷新研究指标</button>
-            <a class="link-button" href="compare.html">股票对比</a>
+            <a class="link-button pro-only" href="compare.html">股票对比</a>
           </div>
+
+          <section class="memory-panel wide">
+            <div class="memory-head">
+              <div>
+                <h3>本地记录</h3>
+                <p>新增股票可以加入观察池，最近分析过的股票会保存在本机，方便回看。</p>
+              </div>
+              <span class="pill" id="watchlistStatus">观察池 0 只</span>
+            </div>
+            <div class="memory-list" id="recentHistory">
+              <div class="memory-empty">最近查看和保存的股票会出现在这里。</div>
+            </div>
+          </section>
         </form>
 
         <section class="panel result" id="result">
           <div class="empty-state">
             <span class="empty-icon"></span>
             <h2>输入股票后计算</h2>
-            <p>建议先从预设股票开始验证：中稀有色、长城军工、航天电子、国机精工、紫光国微。</p>
+            <p>普通模式会先展示值不值得继续研究、建议仓位和三条核心理由；详细财务和术语说明放到专业模式里看。</p>
           </div>
         </section>
 
@@ -115,33 +140,48 @@
           <div class="panel-title">
             <div>
               <h2>本地模型研究助手</h2>
-              <p>读取当前股票、估值和仓位上下文，对这只股票提问。</p>
+              <p>它会读取当前页面的股票、估值和仓位上下文，并保留思考过程供用户展开查看。</p>
             </div>
-            <span class="pill" id="llmStatus">检测中</span>
+            <div class="panel-actions">
+              <span class="pill" id="llmStatus">检测中</span>
+              <button type="button" class="secondary simple-only panel-toggle" id="assistantToggle" aria-expanded="false">展开助手</button>
+            </div>
           </div>
           <div class="chat-layout">
             <div class="chat-log" id="chatLog">
               <div class="chat-message assistant">
                 <b>鼓手助手</b>
-                <p>可以问我：现在该不该加仓？安全边际为什么低？这笔仓位的风险怎么控制？</p>
+                <p>你可以直接问：这只股票现在值不值得继续研究？为什么说安全边际不够？如果只允许轻仓，应该怎么看仓位纪律？</p>
               </div>
             </div>
             <div class="chat-compose">
-              <label for="llmModel">本地模型</label>
-              <select id="llmModel"></select>
+              <div class="simple-only quick-prompts">
+                <button type="button" class="ghost llm-chip" data-prompt="用一句话解释当前结论为什么成立。">解释结论</button>
+                <button type="button" class="ghost llm-chip" data-prompt="如果我只允许轻仓，下一步最该观察什么？">下一步看什么</button>
+                <button type="button" class="ghost llm-chip" data-prompt="给我一个更适合继续跟踪的价格区间。">再看什么价位</button>
+              </div>
+              <div class="pro-only chat-settings">
+                <label for="llmModel">本地模型</label>
+                <select id="llmModel"></select>
+                <label class="switch" for="onlineResearch">
+                  <input id="onlineResearch" type="checkbox" checked />
+                  <span aria-hidden="true"></span>
+                  联网读取公司公告
+                </label>
+              </div>
               <label for="chatInput">问题</label>
-              <textarea id="chatInput" rows="4" placeholder="例如：结合当前股票价格和我的仓位，给出进场/加仓/止损纪律。"></textarea>
+              <textarea id="chatInput" rows="4" placeholder="例如：结合当前股票价格和我的仓位，给出继续观察 / 分批买入 / 暂不参与的理由。"></textarea>
               <button type="button" id="chatSend">发送给本地模型</button>
             </div>
           </div>
         </aside>
       </section>
 
-      <section class="panel glossary">
+      <section class="panel glossary pro-only">
         <div class="panel-title glossary-title">
           <div>
             <h2>参数说明</h2>
-            <p>用于对照页面输入和模型回答。</p>
+            <p>用于对照页面输入、研究面板和模型回答。</p>
           </div>
         </div>
         <dl>
@@ -155,7 +195,7 @@
           </div>
           <div>
             <dt>PE(TTM)</dt>
-            <dd>当前股价除以滚动每股收益。PE 高时，价格往往依赖更强预期。</dd>
+            <dd>当前股价除以滚动每股收益。PE 高时，价格往往更依赖预期。</dd>
           </div>
           <div>
             <dt>保守价值</dt>
@@ -163,11 +203,11 @@
           </div>
           <div>
             <dt>门槛买入线</dt>
-            <dd>这是“每股价格阈值”，不是预测股价会跌到哪里。</dd>
+            <dd>这是按安全边际反推的纪律价格，不是预测股价会跌到哪里。</dd>
           </div>
           <div>
-            <dt>本地模型</dt>
-            <dd>模型只解释当前页面数据，不自动获得页面外实时资讯。</dd>
+            <dt>模型思考过程</dt>
+            <dd>前端会保留本地模型的推理文本，默认折叠展示，方便审阅与复盘。</dd>
           </div>
         </dl>
       </section>

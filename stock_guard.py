@@ -16,6 +16,7 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
 import urllib.parse
@@ -25,9 +26,21 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parent
-DEFAULT_CONFIG = ROOT / "config.json"
-LOG_FILE = ROOT / "signals.csv"
+RESOURCE_ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+
+if getattr(sys, "frozen", False):
+    DATA_ROOT = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "StockGuard"
+    DATA_ROOT.mkdir(parents=True, exist_ok=True)
+else:
+    DATA_ROOT = RESOURCE_ROOT
+
+DEFAULT_CONFIG = DATA_ROOT / "config.json"
+LOG_FILE = DATA_ROOT / "signals.csv"
+
+if not DEFAULT_CONFIG.exists():
+    bundled_config = RESOURCE_ROOT / "config.json"
+    if bundled_config.exists():
+        shutil.copy2(bundled_config, DEFAULT_CONFIG)
 
 
 @dataclass
@@ -82,6 +95,49 @@ def fetch_sina_quote(symbol: str, timeout: int = 8) -> Quote | None:
     if price <= 0:
         return None
     return Quote(symbol=symbol, name=name, price=price, source="sina")
+
+
+def fetch_stock_announcements(symbol: str, limit: int = 6, timeout: int = 10) -> list[dict[str, str]]:
+    """Fetch recent company disclosures for retrieval-augmented analysis."""
+    code = normalize_symbol(symbol).split(".", 1)[0]
+    if not re.fullmatch(r"\d{6}", code):
+        return []
+    query = urllib.parse.urlencode(
+        {
+            "sr": -1,
+            "page_size": max(1, min(limit, 20)),
+            "page_index": 1,
+            "ann_type": "A",
+            "client_source": "web",
+            "stock_list": code,
+        }
+    )
+    req = urllib.request.Request(
+        f"https://np-anotice-stock.eastmoney.com/api/security/ann?{query}",
+        headers={"User-Agent": "Mozilla/5.0"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return []
+
+    announcements = []
+    for item in (payload.get("data") or {}).get("list") or []:
+        art_code = str(item.get("art_code") or "")
+        if not art_code:
+            continue
+        columns = [column.get("column_name") for column in item.get("columns") or []]
+        announcements.append(
+            {
+                "title": str(item.get("title_ch") or item.get("title") or ""),
+                "date": str(item.get("notice_date") or "")[:10],
+                "category": "、".join(filter(None, columns)),
+                "source": "东方财富公告",
+                "url": f"https://data.eastmoney.com/notices/detail/{code}/{art_code}.html",
+            }
+        )
+    return announcements
 
 
 def sina_financial_url(symbol: str) -> str:
@@ -308,10 +364,16 @@ def evaluate(stock: dict[str, Any], config: dict[str, Any], live: bool = False) 
     price = quote.price if quote else safe_float(stock.get("today_close"))
     pe_ttm = safe_float(stock.get("pe_ttm"))
     eps = safe_float(stock.get("eps_ttm"))
+    latest_period_eps = safe_float(stock.get("latest_period_eps"), None)
     eps_source = "财务数据输入"
+    if eps <= 0 and latest_period_eps is not None and latest_period_eps > 0:
+        eps = latest_period_eps
+        eps_source = "最新报告期 EPS 代理（非 TTM）"
     if eps <= 0 and pe_ttm > 0:
         eps = price / pe_ttm
         eps_source = "按价格 / PE(TTM)推导"
+    if pe_ttm <= 0 and eps > 0 and price > 0:
+        pe_ttm = price / eps
     bvps = safe_float(stock.get("bvps"))
 
     target_pe = safe_float(stock.get("target_pe"), safe_float(config.get("default_target_pe"), 20))
@@ -347,8 +409,10 @@ def evaluate(stock: dict[str, Any], config: dict[str, Any], live: bool = False) 
         model_fit = "一般"
         model_note = "结果仍依赖 EPS、BVPS 和增长假设，适合作为纪律筛选。"
 
-    if eps <= 0:
+    if eps < 0:
         action = "盈利为负，Graham估值失效"
+    elif eps == 0:
+        action = "缺少 EPS / BVPS，暂时无法估值"
     elif mos is None:
         action = "资料不足"
     elif mos >= required_mos and planned_weight <= max_weight:

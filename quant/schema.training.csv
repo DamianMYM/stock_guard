@@ -1,0 +1,2 @@
+snapshot_date,symbol,name,price,pe_ttm,pb,eps_ttm,bvps,target_pe,growth_rate,required_margin_of_safety,planned_amount,planned_weight,margin_of_safety,conservative_value,buy_below,revenue_growth,profit_growth,roe,operating_cash_flow_growth,operating_cash_flow_value,valuation_percentile,high_pe_flag,high_pb_flag,negative_eps_flag,research_updated_at,future_20d_excess_return,future_60d_excess_return,max_drawdown_20d
+2026-06-20,600259.SH,中钨高新,108.96,145,10.01,0.75,10.885,25,0.1,0.3,10000,0.1,-3.2,26.1,18.3,0.019,2.6155,0.0467,, -4.27,0.5683,1,1,0,2026-04-29,0.12,0.18,-0.09

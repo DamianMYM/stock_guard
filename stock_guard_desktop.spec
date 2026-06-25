@@ -6,7 +6,7 @@ a = Analysis(
     ['desktop_launcher.py'],
     pathex=[],
     binaries=[],
-    datas=[('web', 'web'), ('config.json', '.')],
+    datas=[('web', 'web'), ('config.json', '.'), ('Modelfile.stockguard', '.'), ('setup_ai_model.bat', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -21,10 +21,11 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name='StockGuard',
+    icon=['web/assets/stock-guard.ico'],
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     console=True,
 )
 coll = COLLECT(
@@ -33,7 +34,7 @@ coll = COLLECT(
     a.zipfiles,
     a.datas,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
     name='StockGuard',
 )

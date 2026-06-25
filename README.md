@@ -1,192 +1,184 @@
-# 鼓手 Stock Guard
+# Stock Guard
 
-这个小工具用 Benjamin Graham 风格的安全边际做观察清单。它不会自动交易，只会根据你设置的估值假设、目标仓位和当前价格给出纪律性提示。
+Stock Guard（鼓手）是一个本地优先的 A 股研究助手。它把估值、安全边际、公告解读、候选股排序、观察池记录和本地 LLM 放在一起，目标不是替你下单，而是帮助你更快完成研究判断。
 
-## 运行
+![Stock Guard icon](web/assets/stock-guard-tiger.png)
 
-```bash
-cd /Users/damianma/Documents/ownproject/stock_guard
-python3 stock_guard.py
-```
+## 项目定位
 
-使用实时行情：
+- 本地运行：核心服务跑在你的电脑上，不依赖云端数据库。
+- 研究辅助：提供估值、财务快照、公告事件解读和候选股优先级排序。
+- 模型可替换：默认接 Ollama，本地模型可继续微调和替换。
+- 可打包：支持打包为 Windows EXE 和安装包。
 
-```bash
-python3 stock_guard.py --live
-```
+## 当前能力
 
-记录每天信号：
+### 1. 个股估值与安全边际
 
-```bash
-python3 stock_guard.py --live --log
-```
+- Graham 风格估值和安全边际判断
+- 实时行情覆盖当前价
+- 财务指标补齐与异常兜底
+- 估值失败时给出原因，不直接返回空白结论
 
-出现可行动信号时弹出 macOS 通知：
+### 2. 公告与事件解读
 
-```bash
-python3 stock_guard.py --live --log --notify
-```
+- 抓取东方财富公告
+- 用规则引擎识别订单、扩产、减持、诉讼、政策、涨价、出口限制等事件
+- 输出偏利多、偏利空、偏中性的研究提示
 
-## 网页版
+### 3. 候选股优先级排序
 
-启动本地页面：
+- 不是“预测股价涨跌”
+- 是把当前候选股按“谁更值得先研究”做本地排序
+- 综合估值、成长、财务、公告线索和本地量化打分
 
-```bash
-cd /Users/damianma/Documents/ownproject/stock_guard
-python3 web_app.py
-```
+### 4. 本地研究助手
 
-然后打开：
+- 对当前页面股票给出研究口径
+- 支持显示思考过程
+- 支持切换本地 Ollama 模型
+
+### 5. 本地记录
+
+- 观察池保存与更新
+- 最近查看记录
+- 本地历史不上传
+
+## 技术结构
 
 ```text
-http://127.0.0.1:8787
+Browser / EXE shell
+  -> http://127.0.0.1:8787  (web_app.py)
+  -> 估值 / 公告 / 排序 / 观察池 API
+  -> http://127.0.0.1:11434 (Ollama)
 ```
 
-页面支持输入股票代码或简称，自动拉取实时行情，并从新浪财务指标页抓取最新可得的研究指标；也可以手动覆盖 `PE(TTM)`、`EPS(TTM)`、`BVPS`、计划投入和最低安全边际门槛。
+主要目录：
 
-## 本地模型助手
+- `web/`：前端页面
+- `web_app.py`：本地 Web 服务
+- `stock_guard.py`：估值与基础数据逻辑
+- `intel_engine.py`：公告事件解读
+- `quant_engine.py`：候选股排序与本地量化接口
+- `core_model.py`：行业链路与研究框架补充
+- `quant/`：本地排序模型训练脚本
+- `ml/llm_finetune/`：本地 LLM 微调脚本
 
-鼓手可以连接 Mac 本地的 Ollama / DeepSeek 模型。当前逻辑是：
+## 本地启动
 
-- 鼓手不会自动启动 Ollama。
-- 鼓手启动后，会访问 `http://127.0.0.1:11434/api/tags` 检测本地模型。
-- 如果 Ollama 已经在后台运行，页面右侧会显示 `已连接 Ollama`。
-- 如果 Ollama 没有运行，聊天框会提示先运行 `ollama serve`。
+### 方式 1：源码模式
 
-手动启动 Ollama：
-
-```bash
-ollama serve
+```powershell
+cd G:\Projects\Stock_guard
+python web_app.py
 ```
 
-如果你已经通过 Ollama App 或后台服务启动过 Ollama，通常不需要重复执行上面的命令。
+打开 [http://127.0.0.1:8787](http://127.0.0.1:8787)。
 
-查看本机已有模型：
+### 方式 2：EXE
 
-```bash
+如果你已经打包：
+
+```text
+dist\StockGuard\StockGuard.exe
+```
+
+注意 `StockGuard.exe` 需要和 `_internal` 目录放在一起。
+
+## Ollama
+
+默认本地接口：
+
+- `http://127.0.0.1:11434`
+
+常见检查命令：
+
+```powershell
 ollama list
+ollama ps
 ```
 
-鼓手当前会优先选择：
+## 微调与量化
 
-```text
-deepseek-r1:8b
-```
+### LLM 微调
 
-如果没有 8B 模型，会尝试使用其它 DeepSeek 模型。`bge-m3` 属于向量/Embedding 模型，不适合作为聊天模型，页面会默认过滤掉。
+训练脚本位于：
 
-本地模型助手会读取当前页面上下文，包括：
+- `ml/llm_finetune/train_qlora.py`
+- `ml/llm_finetune/evaluate_qlora.py`
+- `ml/llm_finetune/merge_adapter.py`
+- `ml/llm_finetune/assemble_stockguard_corpus.py`
 
-- 股票代码和名称
-- 当前价
-- PE(TTM)、EPS(TTM)、BVPS
-- 安全边际、买入线、仓位
-- 鼓手已经计算出的纪律判断
+说明文档位于：
 
-注意：本地模型不会自动获得页面外新闻和实时资讯。它解释的是鼓手已经抓取到的数据，不替代实时行情源或人工判断。
+- `ml/llm_finetune/README.md`
 
-新增研究面板会展示：
+说明：
 
-- 营收同比
-- 净利同比
-- ROE
-- 经营现金流指标
-- 四轨判断：价值纪律、成长观察、仓位风险、基本面研究
+- 仓库默认不提交模型权重、训练输出、缓存和本地工具链
+- 你需要自行下载基座模型与 `llama.cpp` / GGUF 工具
 
-## 配置
+### 本地排序模型
 
-编辑 `config.json`：
+脚本位于：
 
-- `portfolio_cash`: 当前总资金。
-- `planned_investment`: 本轮计划投入资金。
-- `required_margin_of_safety`: 要求安全边际，`0.3` 表示 30%。
-- `max_single_stock_weight`: 单只股票最高仓位，`0.35` 表示最多 35%。
-- `pe_ttm`: 滚动市盈率。
-- `eps_ttm`: 滚动 12 个月每股收益；不填时会用 `价格 / PE(TTM)` 估算。
-- `bvps`: 每股净资产，用来计算 Graham Number。
-- `target_pe`: 你愿意给这家公司多少倍合理市盈率。
-- `growth_rate`: 未来长期增长假设，`0.08` 表示 8%。
-- `aaa_yield`: Graham 增长公式中的债券收益率假设。
+- `quant/run_local_pipeline.py`
+- `quant/train_ranker.py`
+- `quant/score_watchlist.py`
 
-## 公式
+说明文档位于：
 
-```text
-EPS(TTM) = 当前股价 / PE(TTM)
-目标PE估值 = EPS(TTM) * 目标PE
-Graham增长估值 = EPS(TTM) * (8.5 + 2g) * 4.4 / Y
-Graham Number = sqrt(22.5 * EPS(TTM) * BVPS)
-保守价值 = min(目标PE估值, Graham增长估值, Graham Number)
-实际安全边际 = (保守价值 - 当前价格) / 保守价值
-买入线 = 保守价值 * (1 - 最低安全边际门槛)
-```
+- `quant/README.md`
 
-注意：最低安全边际门槛由投资者设定，实际安全边际由价格和估算价值计算出来。
+说明：
 
-## 定时运行
+- 仓库默认不提交本地训练产物与导出的评分结果
+- 当前量化模块更像“研究优先级排序器”，不是自动交易策略
 
-最简单的方式是用 Mac 的 `cron` 或 `launchd` 定时执行：
+## EXE 打包
 
-```bash
-python3 /Users/damianma/Documents/ownproject/stock_guard/stock_guard.py --live --log --notify
-```
+如果你修改了代码，安装包不会自动更新。正常流程是：
 
-建议只在交易日交易时间内运行，比如上午 10:00、下午 14:30、收盘后 15:10 各跑一次。
+1. 先在源码模式验证功能
+2. 重新构建 EXE
+3. 重新构建安装包
+4. 再分发给其他人
 
-本目录已经放了一个 `launchd` 模板：`com.local.stockguard.plist`。启用方式：
+本仓库包含：
 
-```bash
-cp /Users/damianma/Documents/ownproject/stock_guard/com.local.stockguard.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.local.stockguard.plist
-```
+- `stock_guard_desktop.spec`
+- `installer.iss`
+- `desktop_launcher.py`
 
-停止方式：
+## 开源范围
 
-```bash
-launchctl unload ~/Library/LaunchAgents/com.local.stockguard.plist
-```
+这个仓库公开的是本地版能力，包括：
 
-## 更新日志
+- 前端界面
+- 本地估值逻辑
+- 公告事件解读
+- 观察池与本地记录
+- Ollama 接入
+- 本地候选股排序脚本
+- 本地微调脚本
 
-### 2026-05-12
+## 适合作为付费增强的方向
 
-- 新增 Web 页面和 Mac 本地服务。
-- 修复安全边际门槛百分数输入逻辑，`24` 表示 `24%`。
-- 修复股票切换时旧财务参数残留的问题。
-- 修复 BVPS 四位小数输入校验。
-- 左侧当前价会与实时行情同步。
-- 品牌更新为 `鼓手 Stock Guard`，形象更新为敲鼓小老虎。
-- 新增长线精选与进场节奏判断，用于辅助长线投资机会筛选。
-- 新增第四条 `基本面研究` 判断。
-- 新增研究面板与轻量图表。
-- 新增新浪财务指标自动抓取，默认刷新最新报告期的 `最新报告期EPS / BVPS / ROE / 营收增速 / 净利增速 / 每股经营现金流`。
-- 明确区分 `最新报告期 EPS` 与估值公式中的 `EPS(TTM)`，避免把单季/单期 EPS 误用于估值。
-- 新增估值分位快照接入：首页和趋势页可展示最近可得的 PE 分位记录。
-- 估值分位当前采用公开页面搜索快照，适合观察位置变化，不应视为逐日完备历史库。
-- 趋势页新增 `保存估值快照`，可手动追加新的分位记录并持久化到 `config.json`。
-- 新增 `刷新研究指标` 按钮，并保留手动覆盖能力。
-- 新增本地模型研究助手：通过 Ollama 调用本机 DeepSeek 模型，对当前股票页面数据提问。
-- 小老虎形象变成交互入口：点击后自动生成当前股票的仓位/进场问题。
-- 本地模型回复新增依据摘要和耗时显示，便于核对模型使用了哪些页面数据。
-- 新增开发教程文档：`DEVELOPMENT_TUTORIAL.md`。
+以下更适合作为后续商业化能力，而不是默认塞进开源基础版：
 
-## 后续方向
+- 更强的历史数据库和自动更新管线
+- 更高质量的行业事件知识库
+- 更成熟的收益预测与回测体系
+- 云端同步、多人协作、跨设备记录
+- 自动生成日报 / 周报 / 研究摘要
+- 专门整理过的微调数据集与行业模板
 
-- 历史趋势页已加入：从详情页进入，可查看近四个报告期的营收增速、净利增速和 ROE 趋势图。
-- 股票对比页已加入：首页点击 `股票对比`，输入两支股票即可比较。
-- Windows 简易安装包：已补 `desktop_launcher.py` 与 `stock_guard_desktop.spec`。
+## 注意
 
-### PyInstaller 打包
+- 这不是投资建议。
+- 排序分数不等于未来涨幅预测。
+- 本项目更适合做研究辅助和流程整理，不适合直接替代完整投研体系。
 
-先安装：
+## License
 
-```bash
-python3 -m pip install pyinstaller
-```
-
-在 macOS 上可先验证：
-
-```bash
-pyinstaller stock_guard_desktop.spec
-```
-
-Windows 版建议在 Windows 机器上执行同一条命令，这样产出的 `StockGuard.exe` 更适合直接分发给家人使用。
+MIT
