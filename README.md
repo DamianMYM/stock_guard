@@ -8,8 +8,7 @@
 
 - 本地运行：核心服务跑在你的电脑上，不依赖云端数据库。
 - 研究辅助：提供估值、财务快照、公告事件解读和候选股优先级排序。
-- 模型可替换：默认接 Ollama，本地模型可继续微调和替换。
-- 可打包：支持打包为 Windows EXE 和安装包。
+- 模型可替换：默认接 Ollama，可替换本地模型。
 
 ## 当前能力
 
@@ -47,7 +46,7 @@
 ## 技术结构
 
 ```text
-Browser / EXE shell
+Browser
   -> http://127.0.0.1:8787  (web_app.py)
   -> 估值 / 公告 / 排序 / 观察池 API
   -> http://127.0.0.1:11434 (Ollama)
@@ -62,63 +61,8 @@ Browser / EXE shell
 - `quant_engine.py`：候选股排序与本地量化接口
 - `core_model.py`：行业链路与研究框架补充
 - `quant/`：本地排序模型训练脚本
-- `ml/llm_finetune/`：本地 LLM 微调脚本
 
-## 本地启动
-
-### 方式 1：源码模式
-
-```powershell
-cd G:\Projects\Stock_guard
-python web_app.py
-```
-
-打开 [http://127.0.0.1:8787](http://127.0.0.1:8787)。
-
-### 方式 2：EXE
-
-如果你已经打包：
-
-```text
-dist\Gushou\Gushou.exe
-```
-
-注意 `Gushou.exe` 需要和 `_internal` 目录放在一起。
-
-## Ollama
-
-默认本地接口：
-
-- `http://127.0.0.1:11434`
-
-常见检查命令：
-
-```powershell
-ollama list
-ollama ps
-```
-
-## 微调与量化
-
-### LLM 微调
-
-训练脚本位于：
-
-- `ml/llm_finetune/train_qlora.py`
-- `ml/llm_finetune/evaluate_qlora.py`
-- `ml/llm_finetune/merge_adapter.py`
-- `ml/llm_finetune/assemble_stockguard_corpus.py`
-
-说明文档位于：
-
-- `ml/llm_finetune/README.md`
-
-说明：
-
-- 仓库默认不提交模型权重、训练输出、缓存和本地工具链
-- 你需要自行下载基座模型与 `llama.cpp` / GGUF 工具
-
-### 本地排序模型
+## 量化排序
 
 脚本位于：
 
@@ -134,33 +78,6 @@ ollama ps
 
 - 仓库默认不提交本地训练产物与导出的评分结果
 - 当前量化模块更像“研究优先级排序器”，不是自动交易策略
-
-## EXE 打包
-
-如果你修改了代码，安装包不会自动更新。正常流程是：
-
-1. 先在源码模式验证功能
-2. 重新构建 EXE
-3. 重新构建安装包
-4. 再分发给其他人
-
-本仓库包含：
-
-- `stock_guard_desktop.spec`
-- `installer.iss`
-- `desktop_launcher.py`
-
-## 仓库公开内容
-
-这个仓库当前公开的是本地版能力，包括：
-
-- 前端界面
-- 本地估值逻辑
-- 公告事件解读
-- 观察池与本地记录
-- Ollama 接入
-- 本地候选股排序脚本
-- 本地微调脚本
 
 ## 注意
 
