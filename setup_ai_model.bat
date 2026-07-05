@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title Stock Guard AI Model Setup
+title 鼓手 AI Model Setup
 
 set "OLLAMA_EXE="
 for /f "delims=" %%I in ('where ollama.exe 2^>nul') do if not defined OLLAMA_EXE set "OLLAMA_EXE=%%I"
@@ -15,7 +15,7 @@ if not defined OLLAMA_EXE (
   exit /b 1
 )
 
-echo Preparing the Stock Guard local model. The first download is about 4.7 GB.
+echo Preparing the 鼓手 local model. The first download is about 4.7 GB.
 "%OLLAMA_EXE%" pull deepseek-r1:7b
 if errorlevel 1 goto :failed
 
@@ -23,7 +23,7 @@ if errorlevel 1 goto :failed
 if errorlevel 1 goto :failed
 
 echo.
-echo Stock Guard AI model is ready.
+echo 鼓手 AI model is ready.
 pause
 exit /b 0
 

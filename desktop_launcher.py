@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Desktop launcher that opens 鼓手 Stock Guard in the default browser."""
+"""Desktop launcher that opens 鼓手 in the default browser."""
 
 from __future__ import annotations
 
@@ -25,15 +25,15 @@ def main() -> int:
         server = ThreadingHTTPServer(("127.0.0.1", 8787), Handler)
     except OSError:
         webbrowser.open(APP_URL)
-        input("Stock Guard is already running. Press Enter to close this window.\n")
+        input("鼓手已在运行。按回车关闭此窗口。\n")
         return 0
 
     threading.Thread(target=server.serve_forever, daemon=True).start()
     threading.Thread(target=open_browser, daemon=True).start()
     try:
         input(
-            "Stock Guard is running at http://127.0.0.1:8787\n"
-            "Keep this window open. Press Enter to stop Stock Guard.\n"
+            "鼓手正在运行：http://127.0.0.1:8787\n"
+            "保持此窗口开启。按回车停止鼓手。\n"
         )
     except (EOFError, KeyboardInterrupt):
         pass

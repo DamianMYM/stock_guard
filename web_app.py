@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local web UI for Stock Guard."""
+"""Local web UI for 鼓手."""
 
 from __future__ import annotations
 
@@ -302,7 +302,7 @@ class Handler(BaseHTTPRequestHandler):
                     context["core_model"] = build_symbol_snapshot(load_config(DEFAULT_CONFIG), symbol, live=True).get("core_model")
 
             system_prompt = (
-                "你是鼓手 Stock Guard 的本地投资研究助手。"
+                "你是鼓手的本地投资研究助手。"
                 "你熟悉 A 股基本面、估值、安全边际、仓位管理、财报与公司公告分析。"
                 "你只能基于用户提供的行情、估值、财务上下文和联网公告做解释与风险建议。"
                 "公告只是一手线索，不要把标题扩写成未经证实的事实。"
@@ -522,7 +522,7 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     server = ThreadingHTTPServer(("127.0.0.1", 8787), Handler)
-    print("Stock Guard running at http://127.0.0.1:8787")
+    print("鼓手运行中：http://127.0.0.1:8787")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

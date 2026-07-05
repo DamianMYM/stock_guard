@@ -29,7 +29,15 @@ from typing import Any
 RESOURCE_ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 
 if getattr(sys, "frozen", False):
-    DATA_ROOT = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "StockGuard"
+    local_appdata = Path(os.environ.get("LOCALAPPDATA", Path.home()))
+    preferred_data_root = local_appdata / "Gushou"
+    legacy_data_root = local_appdata / "StockGuard"
+    if preferred_data_root.exists():
+        DATA_ROOT = preferred_data_root
+    elif legacy_data_root.exists():
+        DATA_ROOT = legacy_data_root
+    else:
+        DATA_ROOT = preferred_data_root
     DATA_ROOT.mkdir(parents=True, exist_ok=True)
 else:
     DATA_ROOT = RESOURCE_ROOT

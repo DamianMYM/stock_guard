@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble a Stock Guard-focused mixed corpus from local financial datasets."""
+"""Assemble a Gushou-focused mixed corpus from local financial datasets."""
 
 from __future__ import annotations
 
@@ -95,7 +95,7 @@ def convert_finchina_row(row: dict[str, Any]) -> dict[str, Any] | None:
 
     prompt = (
         f"{SYSTEM_PREFIX}\n\n"
-        "请阅读下面的资讯，并输出 Stock Guard 式研究摘要：\n"
+        "请阅读下面的资讯，并输出鼓手式研究摘要：\n"
         "1. 先提炼已知事实；\n"
         "2. 再判断事件偏利好、利空还是中性；\n"
         "3. 最后说明还缺什么信息，避免把新闻情绪直接当成投资结论。\n\n"

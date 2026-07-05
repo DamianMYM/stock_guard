@@ -6,6 +6,7 @@ build/
 installer_output/
 history.json
 signals.csv
+com.local.stockguard.plist
 quant/data/
 quant/outputs/
 ml/llm_finetune/.venv/

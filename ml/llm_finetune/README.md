@@ -1,6 +1,6 @@
-# Stock Guard LLM Fine-tuning
+# 鼓手 LLM Fine-tuning
 
-这个目录用于在 Windows 11 本机上完成 Stock Guard 的本地微调、评估、合并、GGUF 导出和 Ollama 接入。
+这个目录用于在 Windows 11 本机上完成鼓手的本地微调、评估、合并、GGUF 导出和 Ollama 接入。
 
 ## 当前环境
 
@@ -31,7 +31,7 @@ python prepare_data.py
 datasets\processed\disc_stockguard
 ```
 
-### 2. Stock Guard 混合数据集
+### 2. 鼓手混合数据集
 
 ```powershell
 python assemble_stockguard_corpus.py
@@ -48,7 +48,7 @@ datasets\processed\stockguard_mix
 - DISC-FinLLM 的基础金融问答
 - FinChina-SA 的事件情绪样本
 - CFEED 的公告事件抽取样本
-- 本地手工整理的 Stock Guard 研究口径样本
+- 本地手工整理的鼓手研究口径样本
 
 ## 训练
 

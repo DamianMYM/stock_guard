@@ -20,7 +20,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='StockGuard',
+    name='Gushou',
     icon=['web/assets/stock-guard.ico'],
     debug=False,
     bootloader_ignore_signals=False,
@@ -36,5 +36,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name='StockGuard',
+    name='Gushou',
 )
